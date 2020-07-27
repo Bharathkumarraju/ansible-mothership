@@ -1,0 +1,32 @@
+- name: Install Java package 
+  yum: 
+    name: "{{ java_package }}-{{ version }}" 
+    state: present
+  when: ansible_pkg_mgr == 'yum'
+
+- name: Install Java package
+  apt: name=openjdk-8-jre-headless state=present
+  when: ansible_pkg_mgr == 'apt'
+
+- name: Find out JAVA_HOME
+  shell: '/bin/readlink -f /usr/bin/java | /bin/sed "s:/bin/java::"'
+  register: java_home_json
+
+- name: Generate /etc/profile.d/java_env.sh
+  template:
+    src=java_env.sh.j2
+    dest=/etc/profile.d/java_env.sh
+
+- name: Create folder for Java Crypto Extension
+  file: >
+    path="{{java_home_json.stdout}}/lib/security"
+    recurse=yes
+    state=directory
+
+- name: Install Java Crypto Extensions
+  copy: >
+    src={{item}}
+    dest="{{java_home_json.stdout}}/lib/security"
+  with_items:
+    - local_policy.jar
+    - US_export_policy.jar

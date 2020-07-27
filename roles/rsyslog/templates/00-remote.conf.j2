@@ -1,0 +1,52 @@
+# {{ansible_managed}}
+# Remote Logging (we use TCP for reliable delivery)
+#
+# An on-disk queue is created for this action. If the remote host is
+# down, messages are spooled to disk and sent when it is up again.
+
+# bharath Templates for forwarded logs:
+template(name="bharath_auxlog_template" type="list"){
+  constant(value="<")
+  property(name="pri")
+  constant(value=">")
+  property(name="timegenerated" dateformat="rfc3339")
+  constant(value=" ")
+  property(name="hostname")
+  constant(value=" ")
+  property(name="syslogtag")
+  constant(value=" [[[{{source_tag}}]]]")
+  property(name="msg")
+}
+
+template(name="bharath_auxlog_add-severity_template" type="list"){
+  constant(value="<")
+  property(name="pri")
+  constant(value=">")
+  property(name="timegenerated" dateformat="rfc3339")
+  constant(value=" ")
+  property(name="hostname")
+  constant(value=" ")
+  property(name="syslogtag")
+  constant(value=" [[[{{source_tag}}]]]")
+  constant(value=" ")
+  property(name="syslogseverity-text")
+  constant(value=" ")
+  property(name="msg")
+}
+
+template(name="bharath_syslog_forward_template" type="list"){
+  constant(value="<")
+  property(name="pri")
+  constant(value=">")
+  property(name="timereported" dateformat="rfc3339")
+  constant(value=" ")
+  property(name="hostname")
+  constant(value=" ")
+  property(name="syslogfacility-text")
+  constant(value=" ")
+  property(name="syslogseverity-text")
+  constant(value=" ")
+  property(name="syslogtag")
+  constant(value=" [[[{{source_tag}}]]]")
+  property(name="msg")
+}

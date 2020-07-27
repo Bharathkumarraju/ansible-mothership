@@ -1,0 +1,29 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+VAGRANTFILE_API_VERSION = "2"
+Vagrant.require_version ">= 1.7"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  config.vm.box = "centos-7-x86_64"
+  config.vm.box_url = "https://mit.jfrog.io/mit/api/vagrant/vagrant-local/centos-7-x86_64"
+  config.ssh.username = "vagrant"
+  config.ssh.password = "vagrant"
+  config.hostsupdater.remove_on_suspend = false
+
+  config.vm.synced_folder ".", "/vagrant" #, type: "nfs"
+  #VM configuration for shipper
+  config.vm.define :test do |shipper_config|
+    shipper_config.vm.hostname = 'test.rsyslog.vagrant'
+    shipper_config.vm.provider "virtualbox" do |vb|
+      vb.customize ["modifyvm", :id, "--name", "test.rsyslog.vagrant", "--memory", "512", "--cpus", "1", "--ioapic", "on"]
+    end
+    shipper_config.vm.network "private_network", ip: "192.168.70.120"
+    shipper_config.vm.provision "ansible" do |ansible|
+      ansible.playbook = "test.yml"
+      ansible.inventory_path = "vagrant_servers"
+      ansible.verbose = "vv"
+      ansible.limit='all'
+    end
+  end
+ end

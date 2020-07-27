@@ -1,0 +1,7 @@
+---
+# This test playbook
+- hosts: all
+  become: true
+  gather_facts: true
+  roles:
+    - { role: rsyslog}
